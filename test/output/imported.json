@@ -7,13 +7,13 @@
   },
   "sourceFiles": [
     {
-      "path": "test/sample_data.csv",
+      "path": "D:\\code\\TraeProjects\\1029\\test\\sample_data.csv",
       "name": "sample_data.csv",
-      "rows": 54
+      "rows": 60
     }
   ],
   "stats": {
-    "totalRows": 54,
+    "totalRows": 60,
     "validRows": 0,
     "invalidRows": 0,
     "filteredRows": 0
@@ -27,13 +27,13 @@
     },
     "sourceFiles": [
       {
-        "path": "test/sample_data.csv",
+        "path": "D:\\code\\TraeProjects\\1029\\test\\sample_data.csv",
         "name": "sample_data.csv",
-        "rows": 54
+        "rows": 60
       }
     ],
     "stats": {
-      "totalRows": 54,
+      "totalRows": 60,
       "validRows": 0,
       "invalidRows": 0,
       "filteredRows": 0
@@ -525,6 +525,60 @@
         "订单号": "ORD20260608005",
         "_parsedDate": null,
         "_channel": "淘宝"
+      },
+      {
+        "日期": "2026-02-31",
+        "渠道": "淘宝",
+        "金额": "1599.00",
+        "数量": "1",
+        "订单号": "ORD20260231001",
+        "_parsedDate": null,
+        "_channel": "淘宝"
+      },
+      {
+        "日期": "2026-13-01",
+        "渠道": "京东",
+        "金额": "2399.00",
+        "数量": "1",
+        "订单号": "ORD20261301001",
+        "_parsedDate": null,
+        "_channel": "京东"
+      },
+      {
+        "日期": "2026-00-10",
+        "渠道": "拼多多",
+        "金额": "899.00",
+        "数量": "1",
+        "订单号": "ORD20260010001",
+        "_parsedDate": null,
+        "_channel": "拼多多"
+      },
+      {
+        "日期": "2026-04-31",
+        "渠道": "抖音",
+        "金额": "1999.00",
+        "数量": "1",
+        "订单号": "ORD20260431001",
+        "_parsedDate": null,
+        "_channel": "抖音"
+      },
+      {
+        "日期": "2026-06-32",
+        "渠道": "快手",
+        "金额": "1299.00",
+        "数量": "1",
+        "订单号": "ORD20260632001",
+        "_parsedDate": null,
+        "_channel": "快手"
+      },
+      {
+        "日期": "2026-06-08",
+        "渠道": "新渠道",
+        "金额": "9999.00",
+        "数量": "1",
+        "订单号": "ORD20260608006",
+        "_parsedDate": null,
+        "_channel": "新渠道"
       }
     ]
   }

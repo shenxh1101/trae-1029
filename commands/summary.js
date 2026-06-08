@@ -19,6 +19,9 @@ const {
   getWeekRange,
   ensureDir,
   parseDate,
+  getChangeInfo,
+  formatChangeForJSON,
+  CHANGE_TYPE,
 } = require('../lib/utils');
 
 function generateTextSummary(summary, dailyData, channelData, anomalies, reportType) {
@@ -167,16 +170,13 @@ async function summaryCommand(input, options, cmd) {
     for (let i = 0; i < dailyData.length; i++) {
       const day = dailyData[i];
       const prevDay = i > 0 ? dailyData[i - 1] : null;
-      const change = prevDay && prevDay.totalAmount > 0
-        ? (day.totalAmount - prevDay.totalAmount) / prevDay.totalAmount
-        : 0;
-      const changeStr = i === 0
-        ? chalk.gray('-')
-        : change > 0
-          ? chalk.green(`+${formatPercent(change, 1)}`)
-          : change < 0
-            ? chalk.red(formatPercent(change, 1))
-            : chalk.gray('0.0%');
+      let changeStr;
+      if (i === 0) {
+        changeStr = chalk.gray('-');
+      } else {
+        const changeInfo = getChangeInfo(day.totalAmount, prevDay.totalAmount);
+        changeStr = changeInfo.display;
+      }
       const rowData = [
         day.dateKey,
         format(day.date, 'EEE', { locale: zhCN }),

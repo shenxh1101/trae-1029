@@ -9,11 +9,11 @@
   },
   "overall": {
     "current": {
-      "totalAmount": 1299,
-      "totalRows": 1,
-      "avgAmount": 1299,
-      "avgDailyAmount": 1299,
-      "totalQuantity": 1
+      "totalAmount": 11298,
+      "totalRows": 2,
+      "avgAmount": 5649,
+      "avgDailyAmount": 11298,
+      "totalQuantity": 2
     },
     "compare": {
       "totalAmount": 67865.5,
@@ -23,23 +23,150 @@
       "totalQuantity": 42
     },
     "changes": {
-      "totalAmount": -0.980859199445963,
-      "totalRows": -0.9714285714285714,
-      "avgAmount": -0.33007198060870396,
-      "avgDailyAmount": -0.8660143961217408
+      "totalAmount": {
+        "type": "normal",
+        "value": -0.8335236607701999,
+        "percent": "-83.4%",
+        "description": "-83.4%"
+      },
+      "totalRows": {
+        "type": "normal",
+        "value": -0.9428571428571428,
+        "percent": "-94.3%",
+        "description": "-94.3%"
+      },
+      "avgAmount": {
+        "type": "normal",
+        "value": 1.9133359365215021,
+        "percent": "+191.3%",
+        "description": "+191.3%"
+      },
+      "avgDailyAmount": {
+        "type": "normal",
+        "value": 0.16533437460860073,
+        "percent": "+16.5%",
+        "description": "+16.5%"
+      },
+      "totalQuantity": {
+        "type": "normal",
+        "value": -0.9523809523809523,
+        "percent": "-95.2%",
+        "description": "-95.2%"
+      }
     }
   },
   "significantChanges": [
     {
       "type": "整体销售额",
-      "change": -0.980859199445963,
-      "message": "整体销售额下降 98.1%"
+      "change": -0.8335236607701999,
+      "changeDescription": "-83.4%",
+      "message": "整体销售额下降 83.4%"
+    },
+    {
+      "type": "渠道",
+      "channel": "新渠道",
+      "change": null,
+      "changeDescription": "新增",
+      "message": "新渠道 渠道为新增渠道，本期销售额 ¥9,999.00"
     },
     {
       "type": "渠道",
       "channel": "未分类",
       "change": null,
-      "message": "未分类 渠道销售额增长 Infinity%"
+      "changeDescription": "新增",
+      "message": "未分类 渠道为新增渠道，本期销售额 ¥1,299.00"
+    }
+  ],
+  "channels": [
+    {
+      "channel": "新渠道",
+      "currentAmount": 9999,
+      "compareAmount": 0,
+      "change": {
+        "type": "new",
+        "value": null,
+        "percent": null,
+        "description": "新增"
+      }
+    },
+    {
+      "channel": "未分类",
+      "currentAmount": 1299,
+      "compareAmount": 0,
+      "change": {
+        "type": "new",
+        "value": null,
+        "percent": null,
+        "description": "新增"
+      }
+    },
+    {
+      "channel": "淘宝",
+      "currentAmount": 0,
+      "compareAmount": 25389,
+      "change": {
+        "type": "normal",
+        "value": -1,
+        "percent": "-100.0%",
+        "description": "-100.0%"
+      }
+    },
+    {
+      "channel": "抖音",
+      "currentAmount": 0,
+      "compareAmount": 18893,
+      "change": {
+        "type": "normal",
+        "value": -1,
+        "percent": "-100.0%",
+        "description": "-100.0%"
+      }
+    },
+    {
+      "channel": "京东",
+      "currentAmount": 0,
+      "compareAmount": 12193.5,
+      "change": {
+        "type": "normal",
+        "value": -1,
+        "percent": "-100.0%",
+        "description": "-100.0%"
+      }
+    },
+    {
+      "channel": "拼多多",
+      "currentAmount": 0,
+      "compareAmount": 8393,
+      "change": {
+        "type": "normal",
+        "value": -1,
+        "percent": "-100.0%",
+        "description": "-100.0%"
+      }
+    },
+    {
+      "channel": "快手",
+      "currentAmount": 0,
+      "compareAmount": 2997,
+      "change": {
+        "type": "normal",
+        "value": -1,
+        "percent": "-100.0%",
+        "description": "-100.0%"
+      }
+    }
+  ],
+  "daily": [
+    {
+      "date": "2026-06-08",
+      "currentAmount": 11298,
+      "compareAmount": 6895.5,
+      "change": {
+        "type": "normal",
+        "value": 0.6384598651294322,
+        "percent": "+63.8%",
+        "description": "+63.8%"
+      }
     }
   ]
 }

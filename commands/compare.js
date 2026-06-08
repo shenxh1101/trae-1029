@@ -20,6 +20,9 @@ const {
   isInDateRange,
   calculateChange,
   formatChange,
+  getChangeInfo,
+  formatChangeForJSON,
+  CHANGE_TYPE,
   ensureDir,
   parseDate,
 } = require('../lib/utils');
@@ -115,21 +118,23 @@ async function compareCommand(input, options, cmd) {
     style: { head: [], border: [] },
     colWidths: [15, 20, 20, 15],
   });
-  const amountChange = calculateChange(currentSummary.totalAmount, compareSummary.totalAmount);
-  const rowsChange = calculateChange(currentSummary.totalRows, compareSummary.totalRows);
-  const avgChange = calculateChange(currentSummary.avgAmount, compareSummary.avgAmount);
-  const dailyChange = calculateChange(currentSummary.avgDailyAmount, compareSummary.avgDailyAmount);
+  const amountChangeInfo = getChangeInfo(currentSummary.totalAmount, compareSummary.totalAmount);
+  const rowsChangeInfo = getChangeInfo(currentSummary.totalRows, compareSummary.totalRows);
+  const avgChangeInfo = getChangeInfo(currentSummary.avgAmount, compareSummary.avgAmount);
+  const dailyChangeInfo = getChangeInfo(currentSummary.avgDailyAmount, compareSummary.avgDailyAmount);
   overallTable.push(
-    ['总销售额', formatCurrency(currentSummary.totalAmount), formatCurrency(compareSummary.totalAmount), formatChange(amountChange)],
-    ['订单数', formatNumber(currentSummary.totalRows), formatNumber(compareSummary.totalRows), formatChange(rowsChange)],
-    ['客单价', formatCurrency(currentSummary.avgAmount), formatCurrency(compareSummary.avgAmount), formatChange(avgChange)],
-    ['日均销售额', formatCurrency(currentSummary.avgDailyAmount), formatCurrency(compareSummary.avgDailyAmount), formatChange(dailyChange)],
+    ['总销售额', formatCurrency(currentSummary.totalAmount), formatCurrency(compareSummary.totalAmount), amountChangeInfo.display],
+    ['订单数', formatNumber(currentSummary.totalRows), formatNumber(compareSummary.totalRows), rowsChangeInfo.display],
+    ['客单价', formatCurrency(currentSummary.avgAmount), formatCurrency(compareSummary.avgAmount), avgChangeInfo.display],
+    ['日均销售额', formatCurrency(currentSummary.avgDailyAmount), formatCurrency(compareSummary.avgDailyAmount), dailyChangeInfo.display],
   );
+  let qtyChangeInfo = null;
   if (currentSummary.totalQuantity > 0 || compareSummary.totalQuantity > 0) {
-    const qtyChange = calculateChange(currentSummary.totalQuantity, compareSummary.totalQuantity);
-    overallTable.push(['总销量', formatNumber(currentSummary.totalQuantity), formatNumber(compareSummary.totalQuantity), formatChange(qtyChange)]);
+    qtyChangeInfo = getChangeInfo(currentSummary.totalQuantity, compareSummary.totalQuantity);
+    overallTable.push(['总销量', formatNumber(currentSummary.totalQuantity), formatNumber(compareSummary.totalQuantity), qtyChangeInfo.display]);
   }
   console.log(overallTable.toString());
+  let mergedChannels = [];
   if (byChannel && store.columns.channelColumn) {
     console.log(`\n${chalk.bold('二、渠道对比（TOP10）')}`);
     const currentChannels = store.groupByChannel(currentRange);
@@ -150,14 +155,15 @@ async function compareCommand(input, options, cmd) {
       ...currentChannels.map(c => c.channel),
       ...compareChannels.map(c => c.channel)
     ]);
-    const mergedChannels = Array.from(allChannels).map(channel => {
+    mergedChannels = Array.from(allChannels).map(channel => {
       const curr = currentChannels.find(c => c.channel === channel) || { totalAmount: 0, totalQuantity: 0, rowCount: 0 };
       const prev = compareChannels.find(c => c.channel === channel) || { totalAmount: 0, totalQuantity: 0, rowCount: 0 };
+      const changeInfo = getChangeInfo(curr.totalAmount, prev.totalAmount);
       return {
         channel,
         currentAmount: curr.totalAmount,
         compareAmount: prev.totalAmount,
-        change: calculateChange(curr.totalAmount, prev.totalAmount),
+        changeInfo,
       };
     }).sort((a, b) => b.currentAmount - a.currentAmount);
     mergedChannels.slice(0, 10).forEach((ch, idx) => {
@@ -167,7 +173,7 @@ async function compareCommand(input, options, cmd) {
         ch.channel,
         formatCurrency(ch.currentAmount),
         formatCurrency(ch.compareAmount),
-        formatChange(ch.change),
+        ch.changeInfo.display,
         formatPercent(share, 1),
       ]);
     });
@@ -190,25 +196,33 @@ async function compareCommand(input, options, cmd) {
     for (let i = 0; i < currentDaily.length; i++) {
       const curr = currentDaily[i];
       const prev = compareDaily[i];
-      const change = prev && prev.totalAmount > 0
-        ? (curr.totalAmount - prev.totalAmount) / prev.totalAmount
-        : 0;
+      const changeInfo = prev
+        ? getChangeInfo(curr.totalAmount, prev.totalAmount)
+        : { display: chalk.gray('无同期数据'), displayShort: '-' };
       dayTable.push([
         curr.dateKey,
         format(curr.date, 'EEE', { locale: zhCN }),
         formatCurrency(curr.totalAmount),
         prev ? formatCurrency(prev.totalAmount) : '-',
-        prev ? formatChange(change) : chalk.gray('-'),
+        changeInfo.display,
       ]);
     }
     console.log(dayTable.toString());
   }
   const significantChanges = [];
-  if (Math.abs(amountChange) > 0.2) {
+  if (amountChangeInfo.type === CHANGE_TYPE.NORMAL && Math.abs(amountChangeInfo.value) > 0.2) {
     significantChanges.push({
       type: '整体销售额',
-      change: amountChange,
-      message: `整体销售额${amountChange > 0 ? '增长' : '下降'} ${formatPercent(Math.abs(amountChange), 1)}`,
+      change: amountChangeInfo.value,
+      changeDescription: amountChangeInfo.displayShort,
+      message: `整体销售额${amountChangeInfo.value > 0 ? '增长' : '下降'} ${formatPercent(Math.abs(amountChangeInfo.value), 1)}`,
+    });
+  } else if (amountChangeInfo.type === CHANGE_TYPE.NEW) {
+    significantChanges.push({
+      type: '整体销售额',
+      change: null,
+      changeDescription: '新增',
+      message: '本期有销售额，上期无数据',
     });
   }
   if (byChannel && store.columns.channelColumn) {
@@ -216,13 +230,19 @@ async function compareCommand(input, options, cmd) {
     const compareMap = new Map(store.groupByChannel(compareRange).map(c => [c.channel, c]));
     for (const ch of currentChannels) {
       const prev = compareMap.get(ch.channel);
-      const change = prev ? calculateChange(ch.totalAmount, prev.totalAmount) : Infinity;
-      if (Math.abs(change) > 0.3 && ch.totalAmount > currentSummary.totalAmount * 0.05) {
+      const changeInfo = prev ? getChangeInfo(ch.totalAmount, prev.totalAmount) : getChangeInfo(ch.totalAmount, 0);
+      const isSignificant = (changeInfo.type === CHANGE_TYPE.NORMAL && Math.abs(changeInfo.value) > 0.3) ||
+                            (changeInfo.type === CHANGE_TYPE.NEW && ch.totalAmount > currentSummary.totalAmount * 0.05);
+      if (isSignificant && ch.totalAmount > currentSummary.totalAmount * 0.05) {
+        const message = changeInfo.type === CHANGE_TYPE.NEW
+          ? `${ch.channel} 渠道为新增渠道，本期销售额 ${formatCurrency(ch.totalAmount)}`
+          : `${ch.channel} 渠道销售额${changeInfo.value > 0 ? '增长' : '下降'} ${formatPercent(Math.abs(changeInfo.value), 1)}`;
         significantChanges.push({
           type: '渠道',
           channel: ch.channel,
-          change,
-          message: `${ch.channel} 渠道销售额${change > 0 ? '增长' : '下降'} ${formatPercent(Math.abs(change), 1)}`,
+          change: changeInfo.value,
+          changeDescription: changeInfo.displayShort,
+          message,
         });
       }
     }
@@ -230,8 +250,9 @@ async function compareCommand(input, options, cmd) {
   if (significantChanges.length > 0) {
     console.log(`\n${chalk.bold.red('四、显著变化提醒')}`);
     for (const item of significantChanges) {
-      const icon = item.change > 0.5 ? '📈' : item.change > 0.2 ? '📊' : '📉';
-      const severity = Math.abs(item.change) > 0.5 ? chalk.red : Math.abs(item.change) > 0.3 ? chalk.yellow : chalk.blue;
+      const changeValue = item.change;
+      const icon = changeValue === null ? '🆕' : changeValue > 0.5 ? '📈' : changeValue > 0.2 ? '📊' : '📉';
+      const severity = changeValue === null ? chalk.green : Math.abs(changeValue) > 0.5 ? chalk.red : Math.abs(changeValue) > 0.3 ? chalk.yellow : chalk.blue;
       console.log(`  ${icon} ${severity(item.message)}`);
     }
   }
@@ -260,14 +281,44 @@ async function compareCommand(input, options, cmd) {
         totalQuantity: compareSummary.totalQuantity,
       },
       changes: {
-        totalAmount: amountChange,
-        totalRows: rowsChange,
-        avgAmount: avgChange,
-        avgDailyAmount: dailyChange,
+        totalAmount: formatChangeForJSON(amountChangeInfo),
+        totalRows: formatChangeForJSON(rowsChangeInfo),
+        avgAmount: formatChangeForJSON(avgChangeInfo),
+        avgDailyAmount: formatChangeForJSON(dailyChangeInfo),
       },
     },
-    significantChanges,
+    significantChanges: significantChanges.map(sc => ({
+      ...sc,
+      change: sc.change !== null && isFinite(sc.change) ? sc.change : null,
+    })),
   };
+  if (qtyChangeInfo) {
+    result.overall.changes.totalQuantity = formatChangeForJSON(qtyChangeInfo);
+  }
+  if (byChannel && store.columns.channelColumn) {
+    result.channels = mergedChannels.map(mc => ({
+      channel: mc.channel,
+      currentAmount: mc.currentAmount,
+      compareAmount: mc.compareAmount,
+      change: formatChangeForJSON(mc.changeInfo),
+    }));
+  }
+  if (byDay && type === 'weekly') {
+    const currentDaily = store.groupByDate(currentRange);
+    const compareDaily = store.groupByDate(compareRange);
+    result.daily = currentDaily.map((curr, i) => {
+      const prev = compareDaily[i];
+      const changeInfo = prev
+        ? getChangeInfo(curr.totalAmount, prev.totalAmount)
+        : { type: CHANGE_TYPE.NO_PREVIOUS, value: null, displayShort: '-' };
+      return {
+        date: curr.dateKey,
+        currentAmount: curr.totalAmount,
+        compareAmount: prev ? prev.totalAmount : 0,
+        change: formatChangeForJSON(changeInfo),
+      };
+    });
+  }
   if (output) {
     const outputPath = path.resolve(output);
     ensureDir(path.dirname(outputPath));

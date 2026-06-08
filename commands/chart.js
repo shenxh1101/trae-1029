@@ -126,11 +126,16 @@ async function chartCommand(input, options, cmd) {
   let dataPoints = [];
   let labels = [];
   let title = '';
+  let sourceData = [];
   if (groupBy === 'date') {
     const dailyData = store.groupByDate(dateRange);
+    sourceData = dailyData;
     if (dailyData.length === 0) {
-      logError('没有可用的日期数据');
-      process.exit(1);
+      logWarning('当前筛选条件下没有可用的日期数据，请调整日期范围后重试');
+      if (output) {
+        logWarning('没有数据，已跳过导出 SVG 文件');
+      }
+      return { hasData: false, message: '没有可用的日期数据' };
     }
     for (const day of dailyData) {
       if (metric === 'amount') dataPoints.push(day.totalAmount);
@@ -142,9 +147,13 @@ async function chartCommand(input, options, cmd) {
     title = `每日${metricName}趋势（${dailyData.length} 天）`;
   } else if (groupBy === 'channel') {
     const channelData = store.groupByChannel(dateRange).slice(0, top);
+    sourceData = channelData;
     if (channelData.length === 0) {
-      logError('没有可用的渠道数据');
-      process.exit(1);
+      logWarning('当前筛选条件下没有可用的渠道数据，请调整筛选条件后重试');
+      if (output) {
+        logWarning('没有数据，已跳过导出 SVG 文件');
+      }
+      return { hasData: false, message: '没有可用的渠道数据' };
     }
     for (const ch of channelData) {
       if (metric === 'amount') dataPoints.push(ch.totalAmount);
@@ -165,14 +174,28 @@ async function chartCommand(input, options, cmd) {
       width: width,
       format: (v) => formatCurrency(v),
     };
-    if (noColor) {
-      console.log(asciichart.plot(dataPoints, { ...config, colors: undefined }));
+    if (dataPoints.length === 1) {
+      const singleValue = dataPoints[0];
+      const singleLabel = labels[0];
+      console.log(chalk.cyan(`📌 单日数据点: ${singleLabel}`));
+      console.log(chalk.green(`   数值: ${formatCurrency(singleValue)}`));
+      console.log('');
+      const barWidth = Math.min(width - 30, 40);
+      const max = singleValue * 1.5;
+      const barLength = Math.round((singleValue / max) * barWidth);
+      console.log(`${' '.repeat(10)} ${chalk.green('█'.repeat(barLength))} ${formatCurrency(singleValue)}`);
+      console.log(`${' '.repeat(10)} ${chalk.gray('└' + '─'.repeat(barWidth) + '┘')}`);
+      console.log(`${' '.repeat(10)} ${singleLabel.padEnd(barWidth)}`);
     } else {
-      console.log(asciichart.plot(dataPoints, { ...config, colors: [asciichart.green] }));
+      if (noColor) {
+        console.log(asciichart.plot(dataPoints, { ...config, colors: undefined }));
+      } else {
+        console.log(asciichart.plot(dataPoints, { ...config, colors: [asciichart.green] }));
+      }
+      const stride = Math.max(1, Math.floor(labels.length / 10));
+      const xLabels = labels.map((l, i) => i % stride === 0 ? l : '').join('  ');
+      console.log(`\n${' '.repeat(10)}${xLabels}`);
     }
-    const stride = Math.max(1, Math.floor(labels.length / 10));
-    const xLabels = labels.map((l, i) => i % stride === 0 ? l : '').join('  ');
-    console.log(`\n${' '.repeat(10)}${xLabels}`);
   } else if (type === 'bar' || type === 'horizontal') {
     if (groupBy === 'channel' || dataPoints.length <= 15) {
       console.log(generateHorizontalBar(dataPoints, labels, title, Math.min(width - 30, 50)));
@@ -261,28 +284,49 @@ async function chartCommand(input, options, cmd) {
 }
 
 function generateSVG(dataPoints, labels, title, type, width, height) {
+  if (!dataPoints || dataPoints.length === 0) {
+    return generateEmptySVG(title, width, height, '没有可用数据');
+  }
+  const validPoints = dataPoints.filter(v => v !== null && v !== undefined && !isNaN(v));
+  if (validPoints.length === 0) {
+    return generateEmptySVG(title, width, height, '没有有效数值');
+  }
   const padding = { top: 40, right: 40, bottom: 60, left: 80 };
-  const chartWidth = width - padding.left - padding.right;
-  const chartHeight = height * 5 - padding.top - padding.bottom;
-  const maxValue = Math.max(...dataPoints) * 1.1;
+  const chartWidth = Math.max(width - padding.left - padding.right, 100);
+  const chartHeight = Math.max(height * 5 - padding.top - padding.bottom, 100);
+  const maxValueRaw = Math.max(...validPoints);
+  const maxValue = isFinite(maxValueRaw) && maxValueRaw > 0 ? maxValueRaw * 1.1 : 100;
   const minValue = 0;
   let paths = '';
   if (type === 'line') {
-    const points = dataPoints.map((v, i) => {
-      const x = padding.left + (i / (dataPoints.length - 1)) * chartWidth;
+    if (dataPoints.length === 1) {
+      const v = dataPoints[0];
+      const x = padding.left + chartWidth / 2;
       const y = padding.top + chartHeight - ((v - minValue) / (maxValue - minValue)) * chartHeight;
-      return `${x},${y}`;
-    });
-    paths = `<polyline points="${points.join(' ')}" fill="none" stroke="#4CAF50" stroke-width="2"/>`;
-    paths += points.map(p => `<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="4" fill="#4CAF50"/>`).join('');
+      paths = `<circle cx="${x}" cy="${y}" r="8" fill="#4CAF50"/>`;
+      paths += `<text x="${x}" y="${y - 15}" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">${formatCurrency(v)}</text>`;
+    } else {
+      const points = dataPoints.map((v, i) => {
+        const x = padding.left + (i / (dataPoints.length - 1)) * chartWidth;
+        const yVal = (v - minValue) / (maxValue - minValue);
+        const y = padding.top + chartHeight - (isFinite(yVal) ? yVal : 0.5) * chartHeight;
+        return `${x},${y}`;
+      });
+      paths = `<polyline points="${points.join(' ')}" fill="none" stroke="#4CAF50" stroke-width="2"/>`;
+      paths += points.map((p, i) => {
+        const [x, y] = p.split(',');
+        return `<circle cx="${x}" cy="${y}" r="4" fill="#4CAF50"/><title>${labels[i]}: ${formatCurrency(dataPoints[i])}</title>`;
+      }).join('');
+    }
   } else if (type === 'bar' || type === 'horizontal') {
     const barWidth = chartWidth / dataPoints.length * 0.7;
     const colors = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336', '#00BCD4', '#8BC34A', '#FF5722'];
     paths = dataPoints.map((v, i) => {
       const x = padding.left + (i / dataPoints.length) * chartWidth + (chartWidth / dataPoints.length - barWidth) / 2;
-      const barHeight = ((v - minValue) / (maxValue - minValue)) * chartHeight;
+      const yRatio = ((v - minValue) / (maxValue - minValue));
+      const barHeight = isFinite(yRatio) ? yRatio * chartHeight : 0;
       const y = padding.top + chartHeight - barHeight;
-      return `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${colors[i % colors.length]}" rx="3"/>`;
+      return `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${colors[i % colors.length]}" rx="3"><title>${labels[i]}: ${formatCurrency(v)}</title></rect>`;
     }).join('');
   }
   const xLabels = labels.map((label, i) => {
@@ -293,7 +337,8 @@ function generateSVG(dataPoints, labels, title, type, width, height) {
   const yLabels = Array.from({ length: yTicks + 1 }, (_, i) => {
     const value = minValue + (maxValue - minValue) * (i / yTicks);
     const y = padding.top + chartHeight - (i / yTicks) * chartHeight;
-    return `<text x="${padding.left - 10}" y="${y + 4}" text-anchor="end" font-size="11" fill="#666">${Math.round(value).toLocaleString()}</text>`;
+    const displayValue = isFinite(value) ? Math.round(value).toLocaleString() : '0';
+    return `<text x="${padding.left - 10}" y="${y + 4}" text-anchor="end" font-size="11" fill="#666">${displayValue}</text>`;
   }).join('');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height * 5}" viewBox="0 0 ${width} ${height * 5}">
@@ -304,6 +349,15 @@ function generateSVG(dataPoints, labels, title, type, width, height) {
   ${yLabels}
   ${xLabels}
   ${paths}
+</svg>`;
+}
+
+function generateEmptySVG(title, width, height, message) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height * 5}" viewBox="0 0 ${width} ${height * 5}">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="${width / 2}" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">${title}</text>
+  <text x="${width / 2}" y="${height * 2.5}" text-anchor="middle" font-size="14" fill="#999">${message}</text>
 </svg>`;
 }
 
