@@ -101,6 +101,32 @@ function checkJSONStructure(jsonObj, context) {
   return { passed: true, message: `${context} 数值结构正确，无不合法值` };
 }
 
+function checkNoNullInChangeValues(jsonObj, context) {
+  const issues = [];
+  function traverse(obj, path = '') {
+    if (obj === null || obj === undefined) {
+      if (path.includes('.change.') || path.includes('.changes.') || path.endsWith('.change')) {
+        issues.push(`${path} = null (变化值不应为 null)`);
+      }
+      return;
+    }
+    if (typeof obj === 'object') {
+      if (Array.isArray(obj)) {
+        obj.forEach((item, i) => traverse(item, `${path}[${i}]`));
+      } else {
+        for (const [key, value] of Object.entries(obj)) {
+          traverse(value, `${path}.${key}`);
+        }
+      }
+    }
+  }
+  traverse(jsonObj);
+  if (issues.length > 0) {
+    return { passed: false, message: `${context} 变化值存在 null: ${issues.join(', ')}` };
+  }
+  return { passed: true, message: `${context} 变化值中无 null` };
+}
+
 console.log(chalk.bold.cyan('='.repeat(60)));
 console.log(chalk.bold.cyan('  报表分析工具 - 功能测试（增强版）'));
 console.log(chalk.bold.cyan('='.repeat(60)));
@@ -138,10 +164,74 @@ runTest(
   (output) => {
     const hasInvalidDates = output.includes('无效日期') && output.includes('5');
     const hasChannelsMerged = output.includes('渠道合并');
-    if (hasInvalidDates && hasChannelsMerged) {
-      return { passed: true, message: '成功过滤 5 个非法日期，合并同名渠道' };
+    if (!hasInvalidDates || !hasChannelsMerged) {
+      return { passed: false, message: '非法日期过滤或渠道合并未正常工作' };
     }
-    return { passed: false, message: '非法日期过滤或渠道合并未正常工作' };
+    const cleanedPath = path.join(testDir, 'cleaned.json');
+    if (!fs.existsSync(cleanedPath)) {
+      return { passed: false, message: 'cleaned.json 不存在' };
+    }
+    const content = fs.readFileSync(cleanedPath, 'utf-8');
+    const json = JSON.parse(content);
+    const invalidDatePatterns = ['2026-02-31', '2026-13-01', '2026-00-10', '2026-04-31', '2026-06-32', '2026-03-03', '2026-05-01'];
+    for (const pattern of invalidDatePatterns) {
+      if (content.includes(pattern)) {
+        return { passed: false, message: `cleaned.json 中发现非法日期 ${pattern}` };
+      }
+    }
+    return { passed: true, message: '成功过滤 5 个非法日期，cleaned.json 中无非法日期和滚动日期' };
+  }
+);
+
+runTest(
+  '4b. clean 命令 - keep-invalid-dates 保留原始行但不参与统计',
+  `${reportCmd} clean "${path.join(testDir, 'imported.json')}" --keep-invalid-dates --output "${path.join(testDir, 'cleaned_keep_invalid.json')}"`,
+  0,
+  (output) => {
+    const cleanedPath = path.join(testDir, 'cleaned_keep_invalid.json');
+    if (!fs.existsSync(cleanedPath)) {
+      return { passed: false, message: 'cleaned_keep_invalid.json 不存在' };
+    }
+    const content = fs.readFileSync(cleanedPath, 'utf-8');
+    const json = JSON.parse(content);
+    const invalidDatePatterns = ['2026-02-31', '2026-13-01', '2026-00-10', '2026-04-31', '2026-06-32'];
+    let foundCount = 0;
+    for (const pattern of invalidDatePatterns) {
+      if (content.includes(pattern)) {
+        foundCount++;
+      }
+    }
+    if (foundCount < 5) {
+      return { passed: false, message: `keep-invalid-dates 应该保留 5 个非法日期，实际找到 ${foundCount} 个` };
+    }
+    const rows = json.data ? json.data.rows : [];
+    const nullDateRows = rows.filter(r => r._parsedDate === null);
+    if (nullDateRows.length < 5) {
+      return { passed: false, message: `非法日期行的 _parsedDate 应该为 null，实际只有 ${nullDateRows.length} 行` };
+    }
+    const stats = json.stats || {};
+    const validRows = stats.validRows || 0;
+    if (validRows < 55) {
+      return { passed: false, message: `keep-invalid-dates 应该保留更多有效行（含非法日期行），实际只有 ${validRows} 行` };
+    }
+    return { passed: true, message: `keep-invalid-dates 保留 ${foundCount} 个非法日期，${nullDateRows.length} 行 _parsedDate 为 null，总有效行 ${validRows}，不会参与统计` };
+  }
+);
+
+runTest(
+  '4c. 验证 keep-invalid-dates 数据不参与 2 月统计',
+  `${reportCmd} summary "${path.join(testDir, 'cleaned_keep_invalid.json')}" --type custom --start-date 2026-02-01 --end-date 2026-02-28 --output "${path.join(testDir, 'feb_summary_keep_invalid.json')}"`,
+  0,
+  () => {
+    const febPath = path.join(testDir, 'feb_summary_keep_invalid.json');
+    if (!fs.existsSync(febPath)) {
+      return { passed: false, message: 'feb_summary_keep_invalid.json 不存在' };
+    }
+    const content = JSON.parse(fs.readFileSync(febPath, 'utf-8'));
+    if (content.summary.totalRows === 0 && content.summary.totalAmount === 0) {
+      return { passed: true, message: 'keep-invalid-dates 保留的 2026-02-31 等非法日期未进入 2 月统计' };
+    }
+    return { passed: false, message: `2 月统计有 ${content.summary.totalRows} 条数据，keep-invalid-dates 数据可能错误参与了统计` };
   }
 );
 
@@ -189,18 +279,23 @@ runTest(
     const content = fs.readFileSync(comparePath, 'utf-8');
     const result1 = checkNoInvalidValues(content, 'compare.json');
     if (!result1.passed) return result1;
+    if (content.includes('null')) {
+      const json = JSON.parse(content);
+      const resultNull = checkNoNullInChangeValues(json, 'compare.json');
+      if (!resultNull.passed) return resultNull;
+    }
     const json = JSON.parse(content);
     const result2 = checkJSONStructure(json, 'compare.json');
     if (!result2.passed) return result2;
     if (json.channels) {
       for (const ch of json.channels) {
-        if (ch.change && ch.change.value === null && ch.change.type !== 'normal') {
-          if (!['new', 'no_previous', 'no_current', 'both_zero', 'invalid'].includes(ch.change.type)) {
-            return { passed: false, message: `渠道 ${ch.channel} 的变化类型不正确` };
+        if (ch.change && typeof ch.change.value === 'string') {
+          if (!['新增', '无上期数据', '无本期数据', '0.0%', '-'].includes(ch.change.value)) {
+            return { passed: false, message: `渠道 ${ch.channel} 的变化值 ${ch.change.value} 不是预期的可读文本` };
           }
         }
         if (ch.change && ch.change.description) {
-          if (ch.change.description.includes('Infinity') || ch.change.description.includes('NaN')) {
+          if (ch.change.description.includes('Infinity') || ch.change.description.includes('NaN') || ch.change.description.includes('null')) {
             return { passed: false, message: `渠道 ${ch.channel} 的 description 包含非法值` };
           }
         }
@@ -211,12 +306,25 @@ runTest(
         if (change.type === 'normal' && (change.value === null || change.value === undefined)) {
           return { passed: false, message: `${key} 的 normal 类型变化值为 null` };
         }
-        if (change.description && (change.description.includes('Infinity') || change.description.includes('NaN'))) {
+        if (typeof change.value === 'string' && (change.value.includes('Infinity') || change.value.includes('NaN') || change.value === 'null')) {
+          return { passed: false, message: `${key} 的 value 包含非法值: ${change.value}` };
+        }
+        if (change.description && (change.description.includes('Infinity') || change.description.includes('NaN') || change.description.includes('null'))) {
           return { passed: false, message: `${key} 的 description 包含非法值` };
         }
       }
     }
-    return { passed: true, message: 'compare.json 结构正确，所有变化值都有合理的 type 和 description' };
+    if (json.significantChanges) {
+      for (const sc of json.significantChanges) {
+        if (sc.change === null || sc.change === undefined) {
+          return { passed: false, message: `significantChanges 中 ${sc.type || sc.channel} 的 change 为 null` };
+        }
+        if (typeof sc.change === 'string' && (sc.change.includes('Infinity') || sc.change.includes('NaN'))) {
+          return { passed: false, message: `significantChanges 中 ${sc.type || sc.channel} 的 change 包含非法值` };
+        }
+      }
+    }
+    return { passed: true, message: 'compare.json 结构正确，无 Infinity/null/NaN，变化值使用可读文本' };
   }
 );
 

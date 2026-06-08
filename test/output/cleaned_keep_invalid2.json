@@ -7,16 +7,16 @@
   },
   "stats": {
     "totalRows": 60,
-    "validRows": 51,
-    "invalidRows": 9,
+    "validRows": 59,
+    "invalidRows": 1,
     "filteredRows": 0,
     "cleanDetails": {
-      "invalidDateCount": 6,
+      "invalidDateCount": 0,
       "invalidAmountCount": 1,
-      "zeroAmountCount": 1,
-      "negativeAmountCount": 1,
+      "zeroAmountCount": 0,
+      "negativeAmountCount": 0,
       "customFiltered": 0,
-      "validRows": 51,
+      "validRows": 59,
       "channelsMerged": 6
     }
   },
@@ -30,8 +30,8 @@
     "sourceFiles": [],
     "stats": {
       "totalRows": 60,
-      "validRows": 51,
-      "invalidRows": 9,
+      "validRows": 59,
+      "invalidRows": 1,
       "filteredRows": 0
     },
     "processed": true,
@@ -576,6 +576,17 @@
         "_channel": "拼多多"
       },
       {
+        "日期": "",
+        "渠道": "淘宝",
+        "金额": "899.00",
+        "数量": "1",
+        "订单号": "ORD20260608001",
+        "_parsedDate": null,
+        "_parsedAmount": 899,
+        "_parsedQuantity": 1,
+        "_channel": "淘宝"
+      },
+      {
         "日期": "2026-06-08",
         "渠道": "",
         "金额": "1299.00",
@@ -585,6 +596,83 @@
         "_parsedAmount": 1299,
         "_parsedQuantity": 1,
         "_channel": null
+      },
+      {
+        "日期": "2026-06-08",
+        "渠道": "淘宝",
+        "金额": "0.00",
+        "数量": "1",
+        "订单号": "ORD20260608004",
+        "_parsedDate": "2026-06-08",
+        "_parsedAmount": 0,
+        "_parsedQuantity": 1,
+        "_channel": "淘宝"
+      },
+      {
+        "日期": "2026-06-08",
+        "渠道": "淘宝",
+        "金额": "-99.00",
+        "数量": "1",
+        "订单号": "ORD20260608005",
+        "_parsedDate": "2026-06-08",
+        "_parsedAmount": -99,
+        "_parsedQuantity": 1,
+        "_channel": "淘宝"
+      },
+      {
+        "日期": "2026-02-31",
+        "渠道": "淘宝",
+        "金额": "1599.00",
+        "数量": "1",
+        "订单号": "ORD20260231001",
+        "_parsedDate": null,
+        "_parsedAmount": 1599,
+        "_parsedQuantity": 1,
+        "_channel": "淘宝"
+      },
+      {
+        "日期": "2026-13-01",
+        "渠道": "京东",
+        "金额": "2399.00",
+        "数量": "1",
+        "订单号": "ORD20261301001",
+        "_parsedDate": null,
+        "_parsedAmount": 2399,
+        "_parsedQuantity": 1,
+        "_channel": "京东"
+      },
+      {
+        "日期": "2026-00-10",
+        "渠道": "拼多多",
+        "金额": "899.00",
+        "数量": "1",
+        "订单号": "ORD20260010001",
+        "_parsedDate": null,
+        "_parsedAmount": 899,
+        "_parsedQuantity": 1,
+        "_channel": "拼多多"
+      },
+      {
+        "日期": "2026-04-31",
+        "渠道": "抖音",
+        "金额": "1999.00",
+        "数量": "1",
+        "订单号": "ORD20260431001",
+        "_parsedDate": null,
+        "_parsedAmount": 1999,
+        "_parsedQuantity": 1,
+        "_channel": "抖音"
+      },
+      {
+        "日期": "2026-06-32",
+        "渠道": "快手",
+        "金额": "1299.00",
+        "数量": "1",
+        "订单号": "ORD20260632001",
+        "_parsedDate": null,
+        "_parsedAmount": 1299,
+        "_parsedQuantity": 1,
+        "_channel": "快手"
       },
       {
         "日期": "2026-06-08",

@@ -7,16 +7,16 @@
   },
   "stats": {
     "totalRows": 60,
-    "validRows": 51,
-    "invalidRows": 9,
+    "validRows": 53,
+    "invalidRows": 7,
     "filteredRows": 0,
     "cleanDetails": {
       "invalidDateCount": 6,
       "invalidAmountCount": 1,
-      "zeroAmountCount": 1,
-      "negativeAmountCount": 1,
+      "zeroAmountCount": 0,
+      "negativeAmountCount": 0,
       "customFiltered": 0,
-      "validRows": 51,
+      "validRows": 53,
       "channelsMerged": 6
     }
   },
@@ -27,11 +27,17 @@
       "channelColumn": "渠道",
       "quantityColumn": "数量"
     },
-    "sourceFiles": [],
+    "sourceFiles": [
+      {
+        "path": "test/sample_data.csv",
+        "name": "sample_data.csv",
+        "rows": 60
+      }
+    ],
     "stats": {
       "totalRows": 60,
-      "validRows": 51,
-      "invalidRows": 9,
+      "validRows": 53,
+      "invalidRows": 7,
       "filteredRows": 0
     },
     "processed": true,
@@ -585,6 +591,28 @@
         "_parsedAmount": 1299,
         "_parsedQuantity": 1,
         "_channel": null
+      },
+      {
+        "日期": "2026-06-08",
+        "渠道": "淘宝",
+        "金额": "0.00",
+        "数量": "1",
+        "订单号": "ORD20260608004",
+        "_parsedDate": "2026-06-08",
+        "_parsedAmount": 0,
+        "_parsedQuantity": 1,
+        "_channel": "淘宝"
+      },
+      {
+        "日期": "2026-06-08",
+        "渠道": "淘宝",
+        "金额": "-99.00",
+        "数量": "1",
+        "订单号": "ORD20260608005",
+        "_parsedDate": "2026-06-08",
+        "_parsedAmount": -99,
+        "_parsedQuantity": 1,
+        "_channel": "淘宝"
       },
       {
         "日期": "2026-06-08",

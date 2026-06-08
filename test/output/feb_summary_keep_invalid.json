@@ -1,0 +1,25 @@
+{
+  "reportType": "custom",
+  "dateRange": {
+    "start": "2026-01-31T16:00:00.000Z",
+    "end": "2026-02-27T16:00:00.000Z"
+  },
+  "summary": {
+    "totalRows": 0,
+    "totalAmount": 0,
+    "totalQuantity": 0,
+    "avgAmount": 0,
+    "maxAmount": 0,
+    "minAmount": 0,
+    "dateCount": 0,
+    "avgDailyAmount": 0,
+    "channelCount": 0,
+    "topChannels": [],
+    "dates": [],
+    "dailyAmounts": {},
+    "dailyValues": []
+  },
+  "dailyData": [],
+  "channelData": [],
+  "anomalies": []
+}

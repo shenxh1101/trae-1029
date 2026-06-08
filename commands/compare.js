@@ -220,7 +220,7 @@ async function compareCommand(input, options, cmd) {
   } else if (amountChangeInfo.type === CHANGE_TYPE.NEW) {
     significantChanges.push({
       type: '整体销售额',
-      change: null,
+      change: '新增',
       changeDescription: '新增',
       message: '本期有销售额，上期无数据',
     });
@@ -237,10 +237,13 @@ async function compareCommand(input, options, cmd) {
         const message = changeInfo.type === CHANGE_TYPE.NEW
           ? `${ch.channel} 渠道为新增渠道，本期销售额 ${formatCurrency(ch.totalAmount)}`
           : `${ch.channel} 渠道销售额${changeInfo.value > 0 ? '增长' : '下降'} ${formatPercent(Math.abs(changeInfo.value), 1)}`;
+        const changeValue = changeInfo.value !== null && isFinite(changeInfo.value)
+          ? changeInfo.value
+          : changeInfo.displayShort;
         significantChanges.push({
           type: '渠道',
           channel: ch.channel,
-          change: changeInfo.value,
+          change: changeValue,
           changeDescription: changeInfo.displayShort,
           message,
         });
@@ -251,8 +254,9 @@ async function compareCommand(input, options, cmd) {
     console.log(`\n${chalk.bold.red('四、显著变化提醒')}`);
     for (const item of significantChanges) {
       const changeValue = item.change;
-      const icon = changeValue === null ? '🆕' : changeValue > 0.5 ? '📈' : changeValue > 0.2 ? '📊' : '📉';
-      const severity = changeValue === null ? chalk.green : Math.abs(changeValue) > 0.5 ? chalk.red : Math.abs(changeValue) > 0.3 ? chalk.yellow : chalk.blue;
+      const isStringChange = typeof changeValue === 'string';
+      const icon = isStringChange ? '🆕' : changeValue > 0.5 ? '📈' : changeValue > 0.2 ? '📊' : '📉';
+      const severity = isStringChange ? chalk.green : Math.abs(changeValue) > 0.5 ? chalk.red : Math.abs(changeValue) > 0.3 ? chalk.yellow : chalk.blue;
       console.log(`  ${icon} ${severity(item.message)}`);
     }
   }
@@ -287,10 +291,7 @@ async function compareCommand(input, options, cmd) {
         avgDailyAmount: formatChangeForJSON(dailyChangeInfo),
       },
     },
-    significantChanges: significantChanges.map(sc => ({
-      ...sc,
-      change: sc.change !== null && isFinite(sc.change) ? sc.change : null,
-    })),
+    significantChanges: significantChanges.map(sc => ({ ...sc })),
   };
   if (qtyChangeInfo) {
     result.overall.changes.totalQuantity = formatChangeForJSON(qtyChangeInfo);
