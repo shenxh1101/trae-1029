@@ -1,0 +1,27 @@
+{
+  "name": "report-analyzer",
+  "version": "1.0.0",
+  "description": "报表分析命令行工具 - 快速整理日报和周报",
+  "main": "bin/index.js",
+  "bin": {
+    "report": "bin/index.js"
+  },
+  "scripts": {
+    "start": "node bin/index.js",
+    "test": "node test/run-tests.js"
+  },
+  "keywords": ["report", "analysis", "cli", "excel", "csv"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "commander": "^11.1.0",
+    "configstore": "^5.0.1",
+    "csv-parser": "^3.0.0",
+    "date-fns": "^2.30.0",
+    "inquirer": "^8.2.6",
+    "asciichart": "^1.5.25",
+    "xlsx": "^0.18.5"
+  }
+}

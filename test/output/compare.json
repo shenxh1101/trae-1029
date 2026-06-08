@@ -1,0 +1,45 @@
+{
+  "currentRange": {
+    "start": "2026-06-07T16:00:00.000Z",
+    "end": "2026-06-14T15:59:59.999Z"
+  },
+  "compareRange": {
+    "start": "2026-05-31T16:00:00.000Z",
+    "end": "2026-06-07T15:59:59.999Z"
+  },
+  "overall": {
+    "current": {
+      "totalAmount": 1299,
+      "totalRows": 1,
+      "avgAmount": 1299,
+      "avgDailyAmount": 1299,
+      "totalQuantity": 1
+    },
+    "compare": {
+      "totalAmount": 67865.5,
+      "totalRows": 35,
+      "avgAmount": 1939.0142857142857,
+      "avgDailyAmount": 9695.07142857143,
+      "totalQuantity": 42
+    },
+    "changes": {
+      "totalAmount": -0.980859199445963,
+      "totalRows": -0.9714285714285714,
+      "avgAmount": -0.33007198060870396,
+      "avgDailyAmount": -0.8660143961217408
+    }
+  },
+  "significantChanges": [
+    {
+      "type": "整体销售额",
+      "change": -0.980859199445963,
+      "message": "整体销售额下降 98.1%"
+    },
+    {
+      "type": "渠道",
+      "channel": "未分类",
+      "change": null,
+      "message": "未分类 渠道销售额增长 Infinity%"
+    }
+  ]
+}

@@ -1,0 +1,370 @@
+{
+  "reportType": "custom",
+  "dateRange": {
+    "start": "2026-05-31T16:00:00.000Z",
+    "end": "2026-06-06T16:00:00.000Z"
+  },
+  "summary": {
+    "totalRows": 35,
+    "totalAmount": 67865.5,
+    "totalQuantity": 42,
+    "avgAmount": 1939.0142857142857,
+    "maxAmount": 3999,
+    "minAmount": 599,
+    "dateCount": 7,
+    "avgDailyAmount": 9695.07142857143,
+    "channelCount": 5,
+    "topChannels": [
+      {
+        "channel": "淘宝",
+        "totalAmount": 25389,
+        "totalQuantity": 12,
+        "rowCount": 11,
+        "firstDate": "2026-05-31T16:00:00.000Z",
+        "lastDate": "2026-06-06T16:00:00.000Z"
+      },
+      {
+        "channel": "抖音",
+        "totalAmount": 18893,
+        "totalQuantity": 8,
+        "rowCount": 7,
+        "firstDate": "2026-05-31T16:00:00.000Z",
+        "lastDate": "2026-06-06T16:00:00.000Z"
+      },
+      {
+        "channel": "京东",
+        "totalAmount": 12193.5,
+        "totalQuantity": 9,
+        "rowCount": 7,
+        "firstDate": "2026-05-31T16:00:00.000Z",
+        "lastDate": "2026-06-06T16:00:00.000Z"
+      },
+      {
+        "channel": "拼多多",
+        "totalAmount": 8393,
+        "totalQuantity": 10,
+        "rowCount": 7,
+        "firstDate": "2026-05-31T16:00:00.000Z",
+        "lastDate": "2026-06-06T16:00:00.000Z"
+      },
+      {
+        "channel": "快手",
+        "totalAmount": 2997,
+        "totalQuantity": 3,
+        "rowCount": 3,
+        "firstDate": "2026-06-01T16:00:00.000Z",
+        "lastDate": "2026-06-05T16:00:00.000Z"
+      }
+    ],
+    "dates": [
+      "2026-05-31T16:00:00.000Z",
+      "2026-05-31T16:00:00.000Z",
+      "2026-05-31T16:00:00.000Z",
+      "2026-05-31T16:00:00.000Z",
+      "2026-05-31T16:00:00.000Z",
+      "2026-06-01T16:00:00.000Z",
+      "2026-06-01T16:00:00.000Z",
+      "2026-06-01T16:00:00.000Z",
+      "2026-06-01T16:00:00.000Z",
+      "2026-06-01T16:00:00.000Z",
+      "2026-06-02T16:00:00.000Z",
+      "2026-06-02T16:00:00.000Z",
+      "2026-06-02T16:00:00.000Z",
+      "2026-06-02T16:00:00.000Z",
+      "2026-06-02T16:00:00.000Z",
+      "2026-06-03T16:00:00.000Z",
+      "2026-06-03T16:00:00.000Z",
+      "2026-06-03T16:00:00.000Z",
+      "2026-06-03T16:00:00.000Z",
+      "2026-06-03T16:00:00.000Z",
+      "2026-06-04T16:00:00.000Z",
+      "2026-06-04T16:00:00.000Z",
+      "2026-06-04T16:00:00.000Z",
+      "2026-06-04T16:00:00.000Z",
+      "2026-06-04T16:00:00.000Z",
+      "2026-06-05T16:00:00.000Z",
+      "2026-06-05T16:00:00.000Z",
+      "2026-06-05T16:00:00.000Z",
+      "2026-06-05T16:00:00.000Z",
+      "2026-06-05T16:00:00.000Z",
+      "2026-06-06T16:00:00.000Z",
+      "2026-06-06T16:00:00.000Z",
+      "2026-06-06T16:00:00.000Z",
+      "2026-06-06T16:00:00.000Z",
+      "2026-06-06T16:00:00.000Z"
+    ],
+    "dailyAmounts": {},
+    "dailyValues": [
+      6895.5,
+      7895,
+      10095,
+      11395,
+      10995,
+      8795,
+      11795
+    ]
+  },
+  "dailyData": [
+    {
+      "date": "2026-05-31T16:00:00.000Z",
+      "dateKey": "2026-06-01",
+      "totalAmount": 6895.5,
+      "totalQuantity": 6,
+      "rowCount": 5,
+      "channels": {
+        "淘宝": {
+          "amount": 3798,
+          "quantity": 2,
+          "count": 2
+        },
+        "京东": {
+          "amount": 899.5,
+          "quantity": 2,
+          "count": 1
+        },
+        "拼多多": {
+          "amount": 599,
+          "quantity": 1,
+          "count": 1
+        },
+        "抖音": {
+          "amount": 1599,
+          "quantity": 1,
+          "count": 1
+        }
+      }
+    },
+    {
+      "date": "2026-06-01T16:00:00.000Z",
+      "dateKey": "2026-06-02",
+      "totalAmount": 7895,
+      "totalQuantity": 6,
+      "rowCount": 5,
+      "channels": {
+        "淘宝": {
+          "amount": 1899,
+          "quantity": 1,
+          "count": 1
+        },
+        "京东": {
+          "amount": 1299,
+          "quantity": 1,
+          "count": 1
+        },
+        "拼多多": {
+          "amount": 899,
+          "quantity": 2,
+          "count": 1
+        },
+        "抖音": {
+          "amount": 2999,
+          "quantity": 1,
+          "count": 1
+        },
+        "快手": {
+          "amount": 799,
+          "quantity": 1,
+          "count": 1
+        }
+      }
+    },
+    {
+      "date": "2026-06-02T16:00:00.000Z",
+      "dateKey": "2026-06-03",
+      "totalAmount": 10095,
+      "totalQuantity": 6,
+      "rowCount": 5,
+      "channels": {
+        "淘宝": {
+          "amount": 4898,
+          "quantity": 3,
+          "count": 2
+        },
+        "京东": {
+          "amount": 1899,
+          "quantity": 1,
+          "count": 1
+        },
+        "拼多多": {
+          "amount": 1299,
+          "quantity": 1,
+          "count": 1
+        },
+        "抖音": {
+          "amount": 1999,
+          "quantity": 1,
+          "count": 1
+        }
+      }
+    },
+    {
+      "date": "2026-06-03T16:00:00.000Z",
+      "dateKey": "2026-06-04",
+      "totalAmount": 11395,
+      "totalQuantity": 6,
+      "rowCount": 5,
+      "channels": {
+        "淘宝": {
+          "amount": 2199,
+          "quantity": 1,
+          "count": 1
+        },
+        "京东": {
+          "amount": 2499,
+          "quantity": 1,
+          "count": 1
+        },
+        "拼多多": {
+          "amount": 1899,
+          "quantity": 2,
+          "count": 1
+        },
+        "抖音": {
+          "amount": 3499,
+          "quantity": 1,
+          "count": 1
+        },
+        "快手": {
+          "amount": 1299,
+          "quantity": 1,
+          "count": 1
+        }
+      }
+    },
+    {
+      "date": "2026-06-04T16:00:00.000Z",
+      "dateKey": "2026-06-05",
+      "totalAmount": 10995,
+      "totalQuantity": 6,
+      "rowCount": 5,
+      "channels": {
+        "淘宝": {
+          "amount": 5698,
+          "quantity": 2,
+          "count": 2
+        },
+        "京东": {
+          "amount": 1499,
+          "quantity": 2,
+          "count": 1
+        },
+        "拼多多": {
+          "amount": 999,
+          "quantity": 1,
+          "count": 1
+        },
+        "抖音": {
+          "amount": 2799,
+          "quantity": 1,
+          "count": 1
+        }
+      }
+    },
+    {
+      "date": "2026-06-05T16:00:00.000Z",
+      "dateKey": "2026-06-06",
+      "totalAmount": 8795,
+      "totalQuantity": 6,
+      "rowCount": 5,
+      "channels": {
+        "淘宝": {
+          "amount": 2399,
+          "quantity": 1,
+          "count": 1
+        },
+        "京东": {
+          "amount": 1799,
+          "quantity": 1,
+          "count": 1
+        },
+        "拼多多": {
+          "amount": 1499,
+          "quantity": 1,
+          "count": 1
+        },
+        "抖音": {
+          "amount": 2199,
+          "quantity": 2,
+          "count": 1
+        },
+        "快手": {
+          "amount": 899,
+          "quantity": 1,
+          "count": 1
+        }
+      }
+    },
+    {
+      "date": "2026-06-06T16:00:00.000Z",
+      "dateKey": "2026-06-07",
+      "totalAmount": 11795,
+      "totalQuantity": 6,
+      "rowCount": 5,
+      "channels": {
+        "淘宝": {
+          "amount": 4498,
+          "quantity": 2,
+          "count": 2
+        },
+        "京东": {
+          "amount": 2299,
+          "quantity": 1,
+          "count": 1
+        },
+        "拼多多": {
+          "amount": 1199,
+          "quantity": 2,
+          "count": 1
+        },
+        "抖音": {
+          "amount": 3799,
+          "quantity": 1,
+          "count": 1
+        }
+      }
+    }
+  ],
+  "channelData": [
+    {
+      "channel": "淘宝",
+      "totalAmount": 25389,
+      "totalQuantity": 12,
+      "rowCount": 11,
+      "firstDate": "2026-05-31T16:00:00.000Z",
+      "lastDate": "2026-06-06T16:00:00.000Z"
+    },
+    {
+      "channel": "抖音",
+      "totalAmount": 18893,
+      "totalQuantity": 8,
+      "rowCount": 7,
+      "firstDate": "2026-05-31T16:00:00.000Z",
+      "lastDate": "2026-06-06T16:00:00.000Z"
+    },
+    {
+      "channel": "京东",
+      "totalAmount": 12193.5,
+      "totalQuantity": 9,
+      "rowCount": 7,
+      "firstDate": "2026-05-31T16:00:00.000Z",
+      "lastDate": "2026-06-06T16:00:00.000Z"
+    },
+    {
+      "channel": "拼多多",
+      "totalAmount": 8393,
+      "totalQuantity": 10,
+      "rowCount": 7,
+      "firstDate": "2026-05-31T16:00:00.000Z",
+      "lastDate": "2026-06-06T16:00:00.000Z"
+    },
+    {
+      "channel": "快手",
+      "totalAmount": 2997,
+      "totalQuantity": 3,
+      "rowCount": 3,
+      "firstDate": "2026-06-01T16:00:00.000Z",
+      "lastDate": "2026-06-05T16:00:00.000Z"
+    }
+  ],
+  "anomalies": []
+}

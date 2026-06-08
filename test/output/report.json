@@ -1,0 +1,54 @@
+{
+  "exportTime": "2026-06-08T14:32:08.547Z",
+  "reportType": "daily",
+  "summary": {
+    "totalAmount": 10995,
+    "totalRows": 5,
+    "totalQuantity": 6,
+    "avgAmount": 2199,
+    "avgDailyAmount": 10995,
+    "maxAmount": 3999,
+    "minAmount": 999,
+    "dateCount": 1,
+    "channelCount": 4
+  },
+  "dailyData": [
+    {
+      "date": "2026-06-05",
+      "totalAmount": 10995,
+      "totalQuantity": 6,
+      "rowCount": 5
+    }
+  ],
+  "channelData": [
+    {
+      "channel": "淘宝",
+      "totalAmount": 5698,
+      "totalQuantity": 2,
+      "rowCount": 2,
+      "share": 0.5182355616189177
+    },
+    {
+      "channel": "抖音",
+      "totalAmount": 2799,
+      "totalQuantity": 1,
+      "rowCount": 1,
+      "share": 0.2545702592087312
+    },
+    {
+      "channel": "京东",
+      "totalAmount": 1499,
+      "totalQuantity": 2,
+      "rowCount": 1,
+      "share": 0.13633469758981356
+    },
+    {
+      "channel": "拼多多",
+      "totalAmount": 999,
+      "totalQuantity": 1,
+      "rowCount": 1,
+      "share": 0.09085948158253751
+    }
+  ],
+  "anomalies": []
+}
